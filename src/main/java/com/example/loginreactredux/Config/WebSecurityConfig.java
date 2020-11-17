@@ -73,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
 		// We don't need CSRF for this example
 		httpSecurity.csrf().disable()
-				.cors().configurationSource(corsConfigurationSource())
+				.cors().configurationSource(corsConfigurationSource("http://localhost:3000/"))
 				.and()
 				// nhung request tu url duoc truy cap
 				.authorizeRequests()
@@ -90,16 +90,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 //		registry.addMapping("/**").allowedMethods("*");
 //	}
 
-	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
+	private CorsConfigurationSource corsConfigurationSource(String corsOrigin) {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("*"));
-		configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+		configuration.setAllowedOrigins(Arrays.asList(corsOrigin));
+		configuration.setAllowedMethods(Arrays.asList("GET","POST","HEAD","OPTIONS","PUT","PATCH","DELETE"));
+		configuration.setMaxAge(10L);
 		configuration.setAllowCredentials(true);
-		//the below three lines will add the relevant CORS response headers
-		configuration.addAllowedOrigin("*");
-		configuration.addAllowedHeader("*");
-		configuration.addAllowedMethod("*");
+		configuration.setAllowedHeaders(Arrays.asList("Accept","Access-Control-Request-Method","Access-Control-Request-Headers",
+				"Accept-Language","Authorization","Content-Type","Request-Name","Request-Surname","Origin","X-Request-AppVersion",
+				"X-Request-OsVersion", "X-Request-Device", "X-Requested-With"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
